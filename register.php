@@ -2,28 +2,32 @@
  
 // response json
 $json = array();
+Public public_msg;
+echo $_POST["reg_id"];
+
  
 /**
  * Registering a user device
  * Store reg id in users table
  */
-if (isset($_POST["name"]) && isset($_POST["email"]) && isset($_POST["regId"])) {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $gcm_regid = $_POST["regId"]; // GCM Registration ID
+if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["reg_id"])) {
+    $last_name = $_POST["last_name"];
+    $first_name = $_POST["first_name"];
+    $reg_id = $_POST["reg_id"]; // GCM Registration ID
     // Store user details in db
+    echo $last_name;
     include_once './db_functions.php';
     include_once './GCM.php';
  
     $db = new DB_Functions();
-    $gcm = new GCM();
+    public_msg=$gcm = new GCM();
  
-    $res = $db->storeUser($name, $email, $gcm_regid);
+    $res = $db->storeUser($last_name, $first_name, $reg_id);
  
-    $registatoin_ids = array($gcm_regid);
+    $reg_ids = array($reg_id);
     $message = array("product" => "shirt");
  
-    $result = $gcm->send_notification($registatoin_ids, $message);
+    $result = $gcm->send_notification($reg_ids, $message);
  
     echo $result;
 } else {

@@ -91,12 +91,22 @@
     <body>
         <?php
         include_once 'db_functions.php';
+        //include_once 'register.php';
         $db = new DB_Functions();
         $users = $db->getAllUsers();
+        $result=$db->storeUser("lastname1", "firstname1", "444");
+        if(!$result){
+            echo mysql_error();
+        }
+        else{
+            echo "success";
+        }
         if ($users != false)
             $no_of_users = mysql_num_rows($users);
         else
             $no_of_users = 0;
+            echo $db->getMsg();
+            echo $db->getPubMsg();
         ?>
         <div class="container">
             <h1>No of Devices Registered: <?php echo $no_of_users; ?></h1>
@@ -126,6 +136,7 @@
                     <li>
                         No Users Registered Yet!
                     </li>
+                    
                 <?php } ?>
             </ul>
         </div>
