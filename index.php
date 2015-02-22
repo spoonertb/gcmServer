@@ -91,9 +91,10 @@
     <body>
         <?php
         include_once 'db_functions.php';
+        include_once 'register.php';
         $db = new DB_Functions();
         $users = $db->getAllUsers();
-        if ($users != false)
+        if ($users)
             $no_of_users = mysql_num_rows($users);
         else
             $no_of_users = 0;
@@ -109,14 +110,14 @@
                     while ($row = mysql_fetch_array($users)) {
                         ?>
                         <li>
-                            <form id="<?php echo $row["id"] ?>" name="" method="post" onsubmit="return sendPushNotification('<?php echo $row["id"] ?>')">
-                                <label>Name: </label> <span><?php echo $row["name"] ?></span>
+                            <form id="<?php echo $row["reg_id"] ?>" name="" method="post" onsubmit="return sendPushNotification('<?php echo $row["reg_id"] ?>')">
+                                <label>First Name: </label> <span><?php echo $row["first_name"] ?></span>
                                 <div class="clear"></div>
-                                <label>Email:</label> <span><?php echo $row["email"] ?></span>
+                                <label>Last Name:</label> <span><?php echo $row["last_name"] ?></span>
                                 <div class="clear"></div>
                                 <div class="send_container">                               
                                     <textarea rows="3" name="message" cols="25" class="txt_message" placeholder="Type message here"></textarea>
-                                    <input type="hidden" name="regId" value="<?php echo $row["gcm_regid"] ?>"/>
+                                    <input type="hidden" name="reg_id" value="<?php echo $row["reg_id"] ?>"/>
                                     <input type="submit" class="send_btn" value="Send" onclick=""/>
                                 </div>
                             </form>
@@ -126,6 +127,7 @@
                     <li>
                         No Users Registered Yet!
                     </li>
+                    
                 <?php } ?>
             </ul>
         </div>
