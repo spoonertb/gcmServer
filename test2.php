@@ -1,7 +1,11 @@
 <?php
+    include_once 'db_functions.php';
+    include_once 'GCM.php';
+    $db = new DB_FUNCTIONS();
+    $sm = new GCM();
+    $users = $db->getAllUsers();
 
-if(isset($_POST["reg_id"])) {
-	$name = $_POST["reg_id"];
-	echo $name;
-}
+    while($row = mysql_fetch_array($users)) {
+    	$sm->send_notification($row["reg_id"], "This is a test");
+    }
 ?>

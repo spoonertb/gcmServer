@@ -17,7 +17,7 @@ class DB_Connect {
         require_once 'config.php';
         // connecting to mysql
         $con = mysql_connect(DB_HOST, DB_USER, DB_PASSWORD);
-	mysql_select_db(DB_DATABASE);
+	    mysql_select_db(DB_DATABASE);
 #       $con = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
         // selecting database
         //mysql_select_db(DB_DATABASE);

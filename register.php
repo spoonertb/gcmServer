@@ -1,7 +1,7 @@
 <?php
  
 // response json
-$json = array();
+//$json = array();
 #Public public_msg;
 
  
@@ -19,10 +19,10 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
  
     $db = new DB_Functions();
  
-    $res = $db->storeUser($reg_id,$first_name, $last_name);
+    $res = $db->storeUser($reg_id, $first_name, $last_name);
  
     $reg_ids = array($reg_id);
-    $message = array("product" => "shirt");
+    $message = array("GcmService" => "Device Registered with Push notification server");
  
 #    $result = $gcm->send_notification($reg_ids, $message);
  

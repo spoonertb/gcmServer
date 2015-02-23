@@ -7,13 +7,12 @@ class DB_Functions {
     private $db;
     public static $public_msg="woo";
  
-    //put your code here
     // constructor
     function __construct() {
         include_once './db_connect.php';
         // connecting to database
-        $this->con = new DB_Connect();
-        $this->db = $this->con->connect();
+        $this->db = new DB_Connect();
+        $this->db->connect();
     }
  
     // destructor
@@ -27,13 +26,14 @@ class DB_Functions {
      */
     public function storeUser($reg_id, $first_name, $last_name) {
         // insert user into database
-        $result = $this->db->query("INSERT IGNORE INTO gcm_users(reg_id, first_name, last_name) VALUES('$reg_id', '$first_name', '$last_name')");
+        //$result = $this->db->query("INSERT IGNORE INTO users(reg_id, first_name, last_name) VALUES('$reg_id', '$first_name', '$last_name')");
+        $result = mysql_query("INSERT IGNORE INTO users(reg_id, first_name, last_name) VALUES('$reg_id', '$first_name', '$last_name')");
+
         // check for successful store
-        $public_msg=$result;
         if ($result) {
             // get user details
             $id = mysql_insert_id(); // last inserted id
-            $result = $this->db->query("SELECT * FROM gcm_users WHERE reg_id = $reg_id") or die(mysql_error());
+            $result = mysql_query("SELECT * FROM users WHERE reg_id = $id") or die(mysql_error());
             // return user details
             if (mysql_num_rows($result) > 0) {
                 return mysql_fetch_array($result);
@@ -49,7 +49,7 @@ class DB_Functions {
      * Getting all users
      */
     public function getAllUsers() {
-        $result = mysql_query("select * FROM gcm_users");
+        $result = mysql_query("select * FROM users");
         return $result;
     }
 
