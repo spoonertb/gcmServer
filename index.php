@@ -98,6 +98,8 @@
             $no_of_users = mysql_num_rows($users);
         else
             $no_of_users = 0;
+            echo $db->getMsg();
+            echo $db->getPubMsg();
         ?>
         <div class="container">
             <h1>No of Devices Registered: <?php echo $no_of_users; ?></h1>

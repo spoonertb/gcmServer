@@ -2,7 +2,8 @@
  
 // response json
 //$json = array();
-#Public public_msg;
+//Public public_msg;
+
 
  
 /**
@@ -14,6 +15,7 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
     $first_name = $_POST["first_name"];
     $reg_id = $_POST["reg_id"]; // GCM Registration ID
     // Store user details in db
+    echo $reg_id;
     include_once './db_functions.php';
     include_once './GCM.php';
  
