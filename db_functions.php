@@ -11,8 +11,8 @@ class DB_Functions {
     function __construct() {
         include_once './db_connect.php';
         // connecting to database
-        $this->con = new DB_Connect();
-        $this->db = $this->con->connect();
+        $this->db = new DB_Connect();
+        $this->db->connect();
     }
  
     // destructor
@@ -54,22 +54,6 @@ class DB_Functions {
         $result = mysql_query("select * FROM users");
         return $result;
     }
-
-<<<<<<< HEAD
-=======
-    public function getMsg(){
-        if(!($this->msg)){
-            return "fail";
-        }
-        else{
-            return "successful";
-        }
-    }
-
-    public function getPubMsg(){
-        return self::$public_msg;
-    }
->>>>>>> df206c28864890679b0a8a4913ceb8b57f597025
  
 }
  
