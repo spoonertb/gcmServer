@@ -3,10 +3,9 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
         <script type="text/javascript">
             $(document).ready(function(){
-                
             });
             function sendPushNotification(id){
                 var data = $('form#'+id).serialize();
@@ -19,7 +18,7 @@
                          
                     },
                     success: function(data, textStatus, xhr) {
-                          $('.txt_message').val("");
+                        $('.txt_message').val("");
                     },
                     error: function(xhr, textStatus, errorThrown) {
                          
@@ -93,7 +92,11 @@
         include_once 'db_functions.php';
         include_once 'register.php';
         $db = new DB_Functions();
+        //$db->storeUser("point", "last", "first");
         $users = $db->getAllUsers();
+        //include_once 'GCM.php';
+        //$gcm = new GCM();
+        //echo GCM::get_public_msg();
         if ($users)
             $no_of_users = mysql_num_rows($users);
         else
@@ -122,8 +125,18 @@
                                 </div>
                             </form>
                         </li>
+                        <?php
+                        include_once 'GCM.php';
+                        $gcm = new GCM();
+                        //echo $row["reg_id"];
+                        $registatoin_ids = array($row["reg_id"]);
+                        $message = array("GcmServer Notification" => "hello");
+                        $result = $gcm->send_notification($registatoin_ids, $message);
+                        echo $result;
+                        ?>
                     <?php }
                 } else { ?>
+
                     <li>
                         No Users Registered Yet!
                     </li>
