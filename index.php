@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <title></title>
@@ -97,6 +98,8 @@
         //include_once 'GCM.php';
         //$gcm = new GCM();
         //echo GCM::get_public_msg();
+       /* $db->storeProertyId("123", "123");
+        $db->storeProertyId("123", "123");*/
         if ($users)
             $no_of_users = mysql_num_rows($users);
         else
@@ -131,8 +134,8 @@
                         //echo $row["reg_id"];
                         $registatoin_ids = array($row["reg_id"]);
                         $message = array("GcmServer Notification" => "hello");
-                        $result = $gcm->send_notification($registatoin_ids, $message);
-                        echo $result;
+                       // $result = $gcm->send_notification($registatoin_ids, $message);
+                        //echo $result;
                         ?>
                     <?php }
                 } else { ?>
@@ -140,8 +143,48 @@
                     <li>
                         No Users Registered Yet!
                     </li>
+                   
                     
                 <?php } ?>
+                 <?php
+                    //include_once 'db_functions.php'
+                    $hotel_rows = $db->getRevLocation();
+                    //echo "under get \n";
+                    while($row = mysql_fetch_assoc($hotel_rows)){
+                        get_latest_reviews($row["review_id"], $row["location_id"]);
+                        //$db->storeUser($row["review_id"], $row["location_id"], "last name");
+                       // print_r($row[0] . "ROW\n");
+                        //echo $row["location_id"] . "location_id\n";
+                    }
+
+                    function get_latest_reviews($latest_id, $location_id){
+                        include_once './config.php';
+
+                        $url="http://api.tripadvisor.com/api/partner/2.0/location/" . $location_id . "?key=" . TRIPADVISOR_PARTNER_API_KEY;
+                        $context=array(
+                            'http' => array(
+                                'method' => 'GET')
+                        );
+                        $context = @stream_context_create($context);
+                        $result = @file_get_contents($url, false, $context);
+                        $json_result = json_decode($result, true);
+                        if($latest_id == null){
+                            foreach($json_result["reviews"] as $review){
+                                printf($review["id"] . "\n");
+                                printf($review["text"] . "\n");
+                            }
+                        }
+                        else{
+                            foreach($json_result["reviews"] as $review){
+                                printf($review["id"] . "\n");
+                                printf($review["text"] . "\n");
+                                if($review["id"] == $latest_id){
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    ?>
             </ul>
         </div>
     </body>

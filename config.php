@@ -16,4 +16,8 @@ define("DB_DATABASE", "gcm");
  * Google API Key
  */
 define("GOOGLE_API_KEY", "AIzaSyDJ6bKdr0Po9gkQadxqytdNDEunWaT_wLI"); // Place your Google API Key
+/*
+ * TripAdvisor partner API key
+ */
+define("TRIPADVISOR_PARTNER_API_KEY", "F421BF121238453AB5E56EFCC11AE1CA");
 ?>
