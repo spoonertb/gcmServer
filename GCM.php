@@ -33,7 +33,8 @@ class GCM {
             'http' => array(
                 'method' => 'POST',
                 'header' => 'Authorization: key=' . GOOGLE_API_KEY . "\r\n" . 'Content-Type: application/json' . "\r\n",
-                'content' => $data
+                'content' => $data,
+                'alert' => 'This is a test'
             )
         );
         $context = @stream_context_create($context);
@@ -41,10 +42,11 @@ class GCM {
         if ($result === FALSE) {
             die('Curl failed: ' . curl_error($ch));
             //self::$public_msg=$curl_error($ch);
-            $db->storeUser("error", "last", "first");
+            //$db->storeUser("error", "last", "first");
+            echo "Failed";
         }
         else{
-            $db->storeUser("success", "last", "first");
+            //$db->storeUser("success", "last", "first");
         }
     }
 

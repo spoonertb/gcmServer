@@ -4,7 +4,8 @@ runtime: php
 api_version: 1
 
 handlers:
+- url: /task
+  script: notify.php
 - url: /.*
   script: index.php
-- url: /cron.yaml
-  script: cron.yaml
+

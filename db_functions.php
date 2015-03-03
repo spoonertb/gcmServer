@@ -68,6 +68,15 @@ class DB_Functions {
         }
     }
 
+    public function getAllRegIds($property_id) {
+        $result = mysql_query("SELECT reg_id FROM user_hotels WHERE location_id=$property_id");
+        return $result;
+    }
+
+    public function updateMostRecent($property_id, $review_id) {
+        $result = mysql_query("UPDATE hotels SET review_id=$review_id WHERE location_id=$property_id");
+    }
+
     public function getRevLocation(){
         $result = mysql_query("SELECT * FROM hotels");
         return $result;

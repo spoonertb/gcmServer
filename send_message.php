@@ -4,7 +4,7 @@ if (isset($_GET["reg_id"]) && isset($_GET["message"])) {
     $message = $_GET["message"];
     include_once 'db_functions.php';
     $db=new DB_Functions();
-    $db->storeUser("point2", "last", "first");
+    //$db->storeUser("point2", "last", "first");
     include_once 'GCM.php';
      
     $gcm = new GCM();

@@ -1,4 +1,4 @@
 cron:
 - description: hourly summary job
-  url: /get_reviews.php
-  schedule: every 1440 mins
+  url: /task
+  schedule: every 1 mins

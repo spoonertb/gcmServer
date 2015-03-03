@@ -16,7 +16,7 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
     $reg_id = $_POST["reg_id"]; // GCM Registration ID
     $property_id = $_POST["property_id"];
     // Store user details in db
-    echo $reg_id;
+    //echo $reg_id;
     include_once './db_functions.php';
     include_once './GCM.php';
  
@@ -29,16 +29,18 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
         foreach ($ids as $id) {
             $res = $db->storePropertyId($id, $reg_id);
         }
-        
+        echo "Success";
     }
  
     $reg_ids = array($reg_id);
     $message = array("GcmService" => "Device Registered with Push notification server");
  
-#    $result = $gcm->send_notification($reg_ids, $message);
+    $gcm = new GCM();
+    $result = $gcm->send_notification($reg_ids, $message);
  
-    echo $reg_id;
+    //echo $reg_id;
 } else {
     // user details missing
+    echo "Failed";
 }
 ?>

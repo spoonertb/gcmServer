@@ -92,11 +92,12 @@
         <?php
         include_once 'db_functions.php';
         include_once 'register.php';
+
         $db = new DB_Functions();
         //$db->storeUser("point", "last", "first");
         $users = $db->getAllUsers();
-        //include_once 'GCM.php';
-        //$gcm = new GCM();
+        include_once 'GCM.php';
+        $gcm = new GCM();
         //echo GCM::get_public_msg();
        /* $db->storeProertyId("123", "123");
         $db->storeProertyId("123", "123");*/
@@ -129,12 +130,12 @@
                             </form>
                         </li>
                         <?php
-                        include_once 'GCM.php';
+                       // include_once 'GCM.php';
                         $gcm = new GCM();
-                        //echo $row["reg_id"];
-                        $registatoin_ids = array($row["reg_id"]);
-                        $message = array("GcmServer Notification" => "hello");
-                       // $result = $gcm->send_notification($registatoin_ids, $message);
+                        echo $row["reg_id"];
+                        $registration_ids = array($row["reg_id"]);
+                        $message = array("GcmServer Notification" => "index");
+                       // $result = $gcm->send_notification($registration, $message);
                         //echo $result;
                         ?>
                     <?php }
@@ -147,17 +148,22 @@
                     
                 <?php } ?>
                  <?php
-                    //include_once 'db_functions.php'
+                    include_once 'db_functions.php';
+                    include_once 'GCM.php';
+                    $db = new 
                     $hotel_rows = $db->getRevLocation();
                     //echo "under get \n";
                     while($row = mysql_fetch_assoc($hotel_rows)){
-                        get_latest_reviews($row["review_id"], $row["location_id"]);
-                        //$db->storeUser($row["review_id"], $row["location_id"], "last name");
+                        $ids = $db->getAllRegIds($row["location_id"]);
+                        while($row2 = mysql_fetch_assoc($ids)) {
+                            get_latest_reviews($row["review_id"], $row["location_id"], $row2["reg_id"]);
+                        }
+                       // $db->storeUser($row["review_id"], $row["location_id"], "last name");
                        // print_r($row[0] . "ROW\n");
                         //echo $row["location_id"] . "location_id\n";
                     }
 
-                    function get_latest_reviews($latest_id, $location_id){
+                    function get_latest_reviews($latest_id, $location_id, $reg_id) {
                         include_once './config.php';
 
                         $url="http://api.tripadvisor.com/api/partner/2.0/location/" . $location_id . "?key=" . TRIPADVISOR_PARTNER_API_KEY;
@@ -169,19 +175,23 @@
                         $result = @file_get_contents($url, false, $context);
                         $json_result = json_decode($result, true);
                         if($latest_id == null){
+                            $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);
                             foreach($json_result["reviews"] as $review){
                                 printf($review["id"] . "\n");
                                 printf($review["text"] . "\n");
+                                $gcm->send_notification($reg_id, $review);
                             }
                         }
-                        else{
-                            foreach($json_result["reviews"] as $review){
+                        else if ($location_id != $json_result["reviews"][0]["id"]) {
+                            foreach($json_result["reviews"] as $review){                                
                                 printf($review["id"] . "\n");
-                                printf($review["text"] . "\n");
+                                printf($review["text"] . "\n");                                
                                 if($review["id"] == $latest_id){
                                     break;
                                 }
+                                $gcm->send_notification($reg_id, $review);                                
                             }
+                            $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
                         }
                     }
                     ?>
