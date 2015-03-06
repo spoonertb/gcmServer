@@ -11,6 +11,8 @@ class GCM {
  
     /**
      * Sending Push Notification
+     * TODO - Set time to live on GCM as something reasonable... No reason to sit for weeks
+     * If a device is offline, GCM will hold it until they get on. But they don't need it after a week? Few days?
      */
     public function send_notification($reg_ids, $message) {
         // include config

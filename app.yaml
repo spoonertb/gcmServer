@@ -4,8 +4,9 @@ runtime: php
 api_version: 1
 
 handlers:
-- url: /task
-  script: notify.php
 - url: /.*
   script: index.php
+- url: /task
+  script: notify.php
+
 
