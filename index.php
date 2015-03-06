@@ -167,7 +167,10 @@
                         //echo "latest_id: ". $latest_id . "\n";
 
                         $ids = $db->getAllRegIds($location_id);
-                        $devs = mysql_fetch_assoc($ids);
+                        $devs=array();
+                        while($row=mysql_fetch_row($ids)) $devs[]=$row[0];
+                        mysql_free_result($ids);
+                        //$devs = mysql_fetch_assoc($ids);
 
                         echo "Regs: ";
                         $url="http://api.tripadvisor.com/api/partner/2.0/location/" . $location_id . "?key=" . TRIPADVISOR_PARTNER_API_KEY;
@@ -203,7 +206,9 @@
                                 $gcm->send_notification(array($reg_id), array($review["id"] => $review["text"]));
                             }
                             */
-                            $gcm->send_notification(array($devs["reg_id"]), array("GCM Server" => "This property is new, you may have several unread reviews."));
+                           
+                            //$gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
+                            $gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
                     
                         }
 
@@ -220,8 +225,11 @@
                                     break;
                                 }
                                 /*Send unseen reviews to devices as a multicast*/
-                                $gcm->send_notification(array($devs["reg_id"]), array($review["id"] => $review["text"]));
+                                $gcm->send_notification($devs["reg_id"], array($review["id"] => $review["text"]));
+
                             }
+                            //$gcm->send_notification(array($devs["reg_id"]), array($review));
+
                             $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
                         }
                         echo "End \n";
