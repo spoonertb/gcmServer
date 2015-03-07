@@ -196,7 +196,7 @@
                                 break;
                             }
                             //printf("first review" . $first_review["id"]);
-                            $db= new DB_Functions;
+                            //$db= new DB_Functions;
                             //Set most recent review in hotels db to this first encountered review
                             $db->updateMostRecent($location_id, $first_review["id"]);
                             /*
@@ -215,8 +215,8 @@
                         /* The system has found new reviews from the TA API. Send each one to the devices
                         * Trying to multicast each review (set of reviews) to each property. Saves on calls to GCM                    
                         */
-                        else if ($location_id != $json_result["reviews"][0]["id"] && $json_result["reviews"][0]["id"] != null) {
-                            //printf("inside if not null \n");
+                        else if ($latest_id != $json_result["reviews"][0]["id"] && $json_result["reviews"][0]["id"] != null) {
+                            printf("New Reviews \n");
                             foreach($json_result["reviews"] as $review){                                
                                 //printf($review["id"] . "\n");
                                 //printf($review["text"] . "\n"); 
@@ -225,7 +225,7 @@
                                     break;
                                 }
                                 /*Send unseen reviews to devices as a multicast*/
-                                $gcm->send_notification($devs["reg_id"], array($review["id"] => $review["text"]));
+                                $gcm->send_notification($devs, array($review["id"] => $review["text"]));
 
                             }
                             //$gcm->send_notification(array($devs["reg_id"]), array($review));
