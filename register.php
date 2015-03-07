@@ -29,7 +29,7 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
         foreach ($ids as $id) {
             $res = $db->storePropertyId($id, $reg_id);
         }
-        echo "Success";
+        //echo "Success";
     }
  
     $reg_ids = array($reg_id);
@@ -41,6 +41,6 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
     //echo $reg_id;
 } else {
     // user details missing
-    echo "Failed";
+    //echo "Failed";
 }
 ?>

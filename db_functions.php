@@ -68,16 +68,19 @@ class DB_Functions {
         }
     }
 
+    // Return the registration ids that are registered to the hotel `$property_id`
     public function getAllRegIds($property_id) {
         $result = mysql_query("SELECT reg_id FROM user_hotels WHERE location_id=$property_id");
         return $result;
     }
 
+    // Save the most recent review id observed by this system in the db
     public function updateMostRecent($property_id, $review_id) {
         $result = mysql_query("UPDATE hotels SET review_id=$review_id WHERE location_id=$property_id");
         return $result;
     }
 
+    //Returns the full column of hotels stored
     public function getRevLocation(){
         $result = mysql_query("SELECT * FROM hotels");
         return $result;

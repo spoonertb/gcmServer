@@ -128,16 +128,7 @@
                                     <input type="submit" class="send_btn" value="Send" onclick=""/>
                                 </div>
                             </form>
-                        </li>
-                        <?php
-                       // include_once 'GCM.php';
-                        $gcm = new GCM();
-                        //echo $row["reg_id"];
-                        $registration_ids = array($row["reg_id"]);
-                        $message = array("GcmServer Notification" => "index");
-                       // $result = $gcm->send_notification($registration, $message);
-                        //echo $result;
-                        ?>
+                        </li>            
                     <?php }
                 } else { ?>
 
@@ -148,24 +139,40 @@
                     
                 <?php } ?>
                  <?php
-                    include_once 'db_functions.php';
-                    include_once 'GCM.php';
+                    //include_once 'db_functions.php';
+                    //include_once 'GCM.php';
+
                     $hotel_rows = $db->getRevLocation();
-                    //echo "under get \n";
-                    while($row = mysql_fetch_assoc($hotel_rows)){
-                        $ids = $db->getAllRegIds($row["location_id"]);
-                        while($row2 = mysql_fetch_assoc($ids)) {
-                            get_latest_reviews($row["review_id"], $row["location_id"], $row2["reg_id"]);
-                        }
-                       // $db->storeUser($row["review_id"], $row["location_id"], "last name");
-                       // print_r($row[0] . "ROW\n");
-                        //echo $row["location_id"] . "location_id\n";
+
+                    // Iterate through a list of properties
+                    while($hotel = mysql_fetch_assoc($hotel_rows)){
+                        //$ids = $db->getAllRegIds($hotel["location_id"]);
+                        //Iterate through list of devices subscribed to a $row
+                        //while($device = mysql_fetch_assoc($ids)) {   
+                        get_latest_reviews($hotel["review_id"], $hotel["location_id"]);
+                           // get_latest_reviews($hotel["review_id"], $hotel["location_id"], $device["reg_id"]);
+                        //}
+                        // $db->storeUser($row["review_id"], $row["location_id"], "last name");
+                        // print_r($row[0] . "ROW\n");
                     }
 
-                    function get_latest_reviews($latest_id, $location_id, $reg_id) {
+                    // Get newest reviews up until $latest_id and send to devices where appropriate
+                    function get_latest_reviews($latest_id, $location_id) {
                         include_once './config.php';
-                        echo "register id: " . $reg_id . "\n";
-                        echo "latest_id: ". $latest_id . "\n";
+                        //nclude_once 'GCM.php';
+                        $db = new DB_Functions();
+                        $gcm = new GCM();
+                        //$db = new DB_Functions();
+                        echo "location id: " . $location_id . "\n";
+                        //echo "latest_id: ". $latest_id . "\n";
+
+                        $ids = $db->getAllRegIds($location_id);
+                        $devs=array();
+                        while($row=mysql_fetch_row($ids)) $devs[]=$row[0];
+                        mysql_free_result($ids);
+                        //$devs = mysql_fetch_assoc($ids);
+
+                        echo "Regs: ";
                         $url="http://api.tripadvisor.com/api/partner/2.0/location/" . $location_id . "?key=" . TRIPADVISOR_PARTNER_API_KEY;
                         $context=array(
                             'http' => array(
@@ -174,47 +181,64 @@
                         $context = @stream_context_create($context);
                         $result = @file_get_contents($url, false, $context);
                         $json_result = json_decode($result, true);
-                        //$first_key = key($json_result);
-                        $gcm1=new GCM();
-                        $db1=new DB_Functions();
-                        if($latest_id == null){
-                            printf("inside if null \n");
+
+
+                        /* The Property has just been added to the db for the first time. Set first review as recent, don't send push
+                        * No latest review means this system has not been run on this hotel before
+                        * Non-Null $json_result means new reviews. Don't iterate because this could be in the thousands...
+                        */
+                        if(($latest_id == null) && ($json_result["reviews"] != null)){
+                            printf("New Property \n");
                             //printf("first value" . current($json_result["reviews"]). "\n");
-                            //$first_review;
+                            //$first_review;                            
                             foreach ($json_result["reviews"] as $review) {
-                                # code...
+                                //Set the most recent review to the first id from the API and break
                                 $first_review=$review;
-                                //printf("first review" . $review["id"]);
                                 break;
                             }
-                            printf("first review" . $first_review["id"]);
-                            
-                            $result=$db1->updateMostRecent($location_id, $first_review["id"]);
+
+                            //printf("first review" . $first_review["id"]);
+                            //$db= new DB_Functions;
+                            //Set most recent review in hotels db to this first encountered review
+                            $db->updateMostRecent($location_id, $first_review["id"]);
+                            /*
                             foreach($json_result["reviews"] as $review){
-                                printf("inside foreach\n");
-                                printf("id:  " . $review["id"] . "\n");
-                                printf($review["text"] . "\n");
-                                $send_review=array($review);
-                                $gcm1->send_notification($reg_id, array("message" => "test"));
-                                $gcm1->send_notification($reg_id, $send_review);
-                                break;
+                                printf("Check For Non Null First Review\n");                                    
+                                //$gcm->send_notification($reg_id, $review);
+                                $gcm->send_notification(array($reg_id), array($review["id"] => $review["text"]));
                             }
+                            */
+                           
+                            //$gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
+                            $gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
+                    
                         }
-                        else if ($latest_id != $json_result["reviews"][0]["id"]) {
-                            printf("inside if not null \n");
+
+
+                        /* The system has found new reviews from the TA API. Send each one to the devices
+                        * Trying to multicast each review (set of reviews) to each property. Saves on calls to GCM                    
+                        */
+                        else if ($latest_id != $json_result["reviews"][0]["id"] && $json_result["reviews"][0]["id"] != null) {
+                            printf("New Reviews \n");
+                            $review = array();
                             foreach($json_result["reviews"] as $review){                                
-                                printf($review["id"] . "\n");
-                                printf($review["text"] . "\n");                                
+                                //printf($review["id"] . "\n");
+                                //printf($review["text"] . "\n"); 
+                                //Iterate until the previous 'most recent review' is reached. This set is sent to the device
                                 if($review["id"] == $latest_id){
                                     break;
                                 }
-                                $send_review=array($review);
-                                $gcm1->send_notification($reg_id, array("message" => "test"));
-                                $gcm1->send_notification($reg_id, $send_review);   
-                                break;                             
+
+                                /*Send unseen reviews to devices as a multicast*/
+                                //$gcm->send_notification($devs, array($review["id"] => $review["text"]));
+                                //$gcm->send_notification($devs, array($review["id"] => $review));
+                                $reviews[] = $review[0];
                             }
-                            $db1->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
+                            $gcm->send_notification($devs, $reviews);
+
+                            $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
                         }
+                        echo "End \n";
                     }
                     ?>
             </ul>
