@@ -26,8 +26,8 @@ class GCM {
 
 
         $json = array( 
+            'registration_ids' => $reg_ids,          
             'data' => $message, 
-            'registration_ids' => $reg_ids
         );
 
         $data = json_encode( $json );

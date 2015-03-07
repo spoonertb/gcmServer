@@ -217,6 +217,7 @@
                         */
                         else if ($latest_id != $json_result["reviews"][0]["id"] && $json_result["reviews"][0]["id"] != null) {
                             printf("New Reviews \n");
+                            $review = array();
                             foreach($json_result["reviews"] as $review){                                
                                 //printf($review["id"] . "\n");
                                 //printf($review["text"] . "\n"); 
@@ -225,10 +226,11 @@
                                     break;
                                 }
                                 /*Send unseen reviews to devices as a multicast*/
-                                $gcm->send_notification($devs, array($review["id"] => $review["text"]));
-
+                                //$gcm->send_notification($devs, array($review["id"] => $review["text"]));
+                                //$gcm->send_notification($devs, array($review["id"] => $review));
+                                $reviews[] = $review[0];
                             }
-                            //$gcm->send_notification(array($devs["reg_id"]), array($review));
+                            $gcm->send_notification($devs, $reviews);
 
                             $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
                         }
