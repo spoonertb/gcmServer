@@ -75,6 +75,7 @@ class DB_Functions {
 
     public function updateMostRecent($property_id, $review_id) {
         $result = mysql_query("UPDATE hotels SET review_id=$review_id WHERE location_id=$property_id");
+        return $result;
     }
 
     public function getRevLocation(){

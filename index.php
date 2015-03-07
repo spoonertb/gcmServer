@@ -175,6 +175,8 @@
                         $result = @file_get_contents($url, false, $context);
                         $json_result = json_decode($result, true);
                         //$first_key = key($json_result);
+                        $gcm1=new GCM();
+                        $db1=new DB_Functions();
                         if($latest_id == null){
                             printf("inside if null \n");
                             //printf("first value" . current($json_result["reviews"]). "\n");
@@ -187,15 +189,18 @@
                             }
                             printf("first review" . $first_review["id"]);
                             
-                            $db->updateMostRecent($location_id, $first_review["id"]);
+                            $result=$db1->updateMostRecent($location_id, $first_review["id"]);
                             foreach($json_result["reviews"] as $review){
                                 printf("inside foreach\n");
                                 printf("id:  " . $review["id"] . "\n");
                                 printf($review["text"] . "\n");
-                                $gcm->send_notification($reg_id, $review);
+                                $send_review=array($review);
+                                $gcm1->send_notification($reg_id, array("message" => "test"));
+                                $gcm1->send_notification($reg_id, $send_review);
+                                break;
                             }
                         }
-                        else if ($location_id != $json_result["reviews"][0]["id"]) {
+                        else if ($latest_id != $json_result["reviews"][0]["id"]) {
                             printf("inside if not null \n");
                             foreach($json_result["reviews"] as $review){                                
                                 printf($review["id"] . "\n");
@@ -203,9 +208,12 @@
                                 if($review["id"] == $latest_id){
                                     break;
                                 }
-                                $gcm->send_notification($reg_id, $review["text"]);                                
+                                $send_review=array($review);
+                                $gcm1->send_notification($reg_id, array("message" => "test"));
+                                $gcm1->send_notification($reg_id, $send_review);   
+                                break;                             
                             }
-                            $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
+                            $db1->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
                         }
                     }
                     ?>

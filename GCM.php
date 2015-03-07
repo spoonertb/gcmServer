@@ -42,11 +42,11 @@ class GCM {
         if ($result === FALSE) {
             die('Curl failed: ' . curl_error($ch));
             //self::$public_msg=$curl_error($ch);
-            //$db->storeUser("error", "last", "first");
+            $db->storeUser("error", "last", "first");
             echo "Failed";
         }
         else{
-            //$db->storeUser("success", "last", "first");
+            $db->storeUser("success", "last", "first");
         }
     }
 
