@@ -208,7 +208,7 @@
                             */
                            
                             //$gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
-                            $gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
+                            //$gcm->send_notification($devs, array("GCM Server" => "This property is new, you may have several unread reviews."));
                     
                         }
 
@@ -230,11 +230,31 @@
                                 //$gcm->send_notification($devs, array($review["id"] => $review));
                                 $reviews[] = $review[0];
                             }
-                            $gcm->send_notification($devs, $reviews);
+                            //$gcm->send_notification($devs, $reviews);
 
                             $db->updateMostRecent($location_id, $json_result["reviews"][0]["id"]);                            
-                        }
-                        echo "End \n";
+                        }/*
+                        $testReviews = array();
+                        $testReviews[] = array("test" => array("id" => $json_result["reviews"][0]["id"],
+                                                        "rating" => $json_result["reviews"][0]["rating"],
+                                                        "location_id" => $json_result["reviews"][0]["location_id"],
+                                                        "username" => $json_result["reviews"][0]["user"]["username"],
+                                                        "date" => $json_result["reviews"][0]["published_date"],
+                                                             ));
+                        $testReviews[] = array("id" => $json_result["reviews"][1]["id"],
+                                                        "rating" => $json_result["reviews"][1]["rating"],
+                                                        "location_id" => $json_result["reviews"][1]["location_id"],
+                                                        "username" => $json_result["reviews"][1]["user"]["username"],
+                                                        "date" => $json_result["reviews"][1]["published_date"],
+                                                             );*/
+                        
+                        $gcm->send_notification($devs, array("id" => $json_result["reviews"][0]["id"],
+                                                        "rating" => $json_result["reviews"][0]["rating"],
+                                                        "location_id" => $json_result["reviews"][0]["location_id"],
+                                                        "username" => $json_result["reviews"][0]["user"]["username"],
+                                                        "date" => $json_result["reviews"][0]["published_date"],
+                                                             ));
+                        //$gcm->send_notification($devs, $testReviews);
                     }
                     ?>
             </ul>

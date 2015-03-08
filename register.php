@@ -36,7 +36,7 @@ if (isset($_POST["last_name"]) && isset($_POST["first_name"]) && isset($_POST["r
     $message = array("GcmService" => "Device Registered with Push notification server");
  
     $gcm = new GCM();
-    $result = $gcm->send_notification($reg_ids, $message);
+   // $result = $gcm->send_notification($reg_ids, $message);
  
     //echo $reg_id;
 } else {
