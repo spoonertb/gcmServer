@@ -46,17 +46,14 @@ class DB_Functions {
             return false;
         }
     }
-
+    /*
+     *Storing property_id into user_hotels and hotels.
+     */
     public function storePropertyId($property_id, $reg_id){
         $result = mysql_query("INSERT IGNORE INTO user_hotels(reg_id, location_id) VALUES('$reg_id', '$property_id')");
         mysql_query("INSERT IGNORE INTO hotels(location_id) VALUES('$property_id')");
 
         if ($result) {
-            // get user details
-            //$id = mysql_insert_id(); // last inserted id
-            //$result = mysql_query("SELECT * FROM user_hotels WHERE reg_id = $reg_id & location_id = $property_id") or die(mysql_error());
-
-            // return user details
             if (mysql_num_rows($result) > 0) {
                // mysql_query("INSERT IGNORE INTO hotels(location_id) VALUES('$property_id')");
                 return mysql_fetch_array($result);
